@@ -1,12 +1,16 @@
 <script setup>
-const props = defineProps({
+defineProps({
   sauceItems: {
     type: Array,
     required: true,
+    default: () => [],
+  },
+  modelValue: {
+    type: String,
+    default: "tomato",
   },
 });
-
-console.log(props.sauceItems);
+defineEmits(["update:modelValue"]);
 </script>
 
 <template>
@@ -14,7 +18,7 @@ console.log(props.sauceItems);
     <p>Основной соус:</p>
 
     <label
-      v-for="(sauce, index) in sauceItems"
+      v-for="sauce in sauceItems"
       :key="sauce.id"
       class="radio ingredients__input"
     >
@@ -22,7 +26,8 @@ console.log(props.sauceItems);
         type="radio"
         name="sauce"
         :value="sauce.value"
-        :checked="index === 0"
+        :checked="sauce.value === modelValue"
+        @change="$emit('update:modelValue', sauce.value)"
       />
       <span>{{ sauce.name }}</span>
     </label>

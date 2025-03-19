@@ -5,8 +5,14 @@ defineProps({
   doughItems: {
     type: Array,
     required: true,
+    default: () => [],
+  },
+  modelValue: {
+    type: String,
+    default: "light",
   },
 });
+defineEmits(["update:modelValue"]);
 </script>
 
 <template>
@@ -16,7 +22,7 @@ defineProps({
 
       <div class="sheet__content dough">
         <label
-          v-for="(dough, index) in doughItems"
+          v-for="dough in doughItems"
           :key="dough.id"
           :class="`dough__input dough__input--${dough.value}`"
         >
@@ -25,7 +31,8 @@ defineProps({
             name="dough"
             class="visually-hidden"
             :value="dough.value"
-            :checked="index === 0"
+            :checked="dough.value === modelValue"
+            @change="$emit('update:modelValue', dough.value)"
           />
           <img :src="getImage(dough.image)" :alt="dough.name" />
           <b>{{ dough.name }}</b>

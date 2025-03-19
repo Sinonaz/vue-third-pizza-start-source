@@ -1,13 +1,44 @@
 <script setup>
 import { getImage } from "@/common/helpers";
 import CounterComponent from "@/common/components/CounterComponent.vue";
+import { toRef } from "vue";
+import { MAX_INGREDIENT_COUNT } from "@/common/constants";
+import AppDrag from "@/common/components/AppDrag.vue";
 
-defineProps({
+const props = defineProps({
   ingredientItems: {
     type: Array,
     required: true,
+    default: () => [],
+  },
+  values: {
+    type: Object,
+    default: () => ({}),
   },
 });
+
+const emit = defineEmits(["update"]);
+const values = toRef(props, "values");
+
+const getValue = (ingredient) => {
+  return values.value[ingredient] ?? 0;
+};
+
+const setValue = (ingredient, count) => {
+  emit("update", ingredient, Number(count));
+};
+
+const decrementValue = (ingredient) => {
+  setValue(ingredient, getValue(ingredient) - 1);
+};
+
+const incrementValue = (ingredient) => {
+  setValue(ingredient, getValue(ingredient) + 1);
+};
+
+const changeValue = (ingredient, count) => {
+  return setValue(ingredient, Math.min(MAX_INGREDIENT_COUNT, Number(count)));
+};
 </script>
 
 <template>
@@ -20,12 +51,30 @@ defineProps({
         :key="ingredient.id"
         class="ingredients__item"
       >
-        <span class="filling filling--mushrooms">
-          <img :src="getImage(ingredient.image)" :alt="ingredient.name" />
-          {{ ingredient.name }}
-        </span>
+        <app-drag
+          :data-transfer="ingredient"
+          :draggable="getValue(ingredient.value) < MAX_INGREDIENT_COUNT"
+        >
+          <span :class="`filling filling--${ingredient.value}`">
+            <img :src="getImage(ingredient.image)" :alt="ingredient.name" />
+            {{ ingredient.name }}
+          </span>
+        </app-drag>
 
-        <counter-component :counter-value="0" />
+        <counter-component
+          :counter-value="getValue(ingredient.value)"
+          :decrement-disable="getValue(ingredient.value) === 0"
+          :increment-disable="
+            getValue(ingredient.value) === MAX_INGREDIENT_COUNT
+          "
+          @decrement="decrementValue(ingredient.value)"
+          @increment="incrementValue(ingredient.value)"
+          @update:counter-value="
+            (value) => {
+              changeValue(ingredient.value, value);
+            }
+          "
+        />
       </li>
     </ul>
   </div>

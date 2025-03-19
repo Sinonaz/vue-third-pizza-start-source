@@ -3,8 +3,14 @@ defineProps({
   sizeItems: {
     type: Array,
     required: true,
+    default: () => [],
+  },
+  modelValue: {
+    type: String,
+    default: "small",
   },
 });
+defineEmits(["update:modelValue"]);
 </script>
 
 <template>
@@ -14,7 +20,7 @@ defineProps({
 
       <div class="sheet__content diameter">
         <label
-          v-for="(size, index) in sizeItems"
+          v-for="size in sizeItems"
           :key="size.id"
           :class="`diameter__input diameter__input--${size.value}`"
         >
@@ -23,7 +29,8 @@ defineProps({
             name="diameter"
             :value="size.value"
             class="visually-hidden"
-            :checked="index === 0"
+            :checked="size.value === modelValue"
+            @change="$emit('update:modelValue', size.value)"
           />
           <span>{{ size.name }}</span>
         </label>

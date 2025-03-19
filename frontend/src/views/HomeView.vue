@@ -14,11 +14,59 @@ import DiameterComponent from "@/modules/constructor/DiameterComponent.vue";
 import SauceComponent from "@/modules/constructor/SauceComponent.vue";
 import FillingComponent from "@/modules/constructor/FillingComponent.vue";
 import PizzaComponent from "@/modules/constructor/PizzaComponent.vue";
+import { reactive, computed } from "vue";
 
 const doughItems = doughs.map(normalizeDough);
 const ingredientItems = ingredients.map(normalizeIngredients);
 const sauceItems = sauces.map(normalizeSauces);
 const sizeItems = sizes.map(normalizeSize);
+
+const pizza = reactive({
+  name: "",
+  dough: doughItems[0].value,
+  size: sizeItems[0].value,
+  sauce: sauceItems[0].value,
+  ingredients: ingredientItems.reduce((acc, item) => {
+    acc[item.value] = 0;
+    return acc;
+  }, {}),
+});
+
+const price = computed(() => {
+  const { dough, size, sauce, ingredients } = pizza;
+
+  const sizeMultiplier =
+    sizeItems.find((item) => item.value === size)?.multiplier ?? 1;
+
+  const doughPrice =
+    doughItems.find((item) => item.value === dough)?.price ?? 0;
+
+  const saucePrice =
+    sauceItems.find((item) => item.value === sauce)?.price ?? 0;
+
+  /*
+   * Здесь мы при помощи метода map превращаем массив ингредиентов
+   * в массив значений, соответствующих итоговой стоимости каждого из них - просто умножив известную цену на количество.
+   * После чего методом reduce вычисляем сумму всех элементов массива, что даст нам общую стоимость всех ингредиентов.
+   */
+  const ingredientsPrice = ingredientItems
+    .map((item) => ingredients[item.value] * item.price)
+    .reduce((acc, item) => acc + item, 0);
+
+  return (doughPrice + saucePrice + ingredientsPrice) * sizeMultiplier;
+});
+
+const disableSubmit = computed(() => {
+  return pizza.name.length === 0 || price.value === 0;
+});
+
+const addIngredient = (ingredient) => {
+  pizza.ingredients[ingredient]++;
+};
+
+const updateIngredientAmount = (ingredient, count) => {
+  pizza.ingredients[ingredient] = count;
+};
 </script>
 
 <template>
@@ -27,9 +75,9 @@ const sizeItems = sizes.map(normalizeSize);
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
 
-        <dough-component :dough-items="doughItems" />
+        <dough-component v-model="pizza.dough" :dough-items="doughItems" />
 
-        <diameter-component :size-items="sizeItems" />
+        <diameter-component v-model="pizza.size" :size-items="sizeItems" />
 
         <div class="content__ingredients">
           <div class="sheet">
@@ -38,14 +86,45 @@ const sizeItems = sizes.map(normalizeSize);
             </h2>
 
             <div class="sheet__content ingredients">
-              <sauce-component :sauce-items="sauceItems" />
+              <sauce-component
+                v-model="pizza.sauce"
+                :sauce-items="sauceItems"
+              />
 
-              <filling-component :ingredient-items="ingredientItems" />
+              <filling-component
+                :ingredient-items="ingredientItems"
+                :values="pizza.ingredients"
+                @update="updateIngredientAmount"
+              />
             </div>
           </div>
         </div>
 
-        <pizza-component />
+        <div class="content__pizza">
+          <label class="input">
+            <span class="visually-hidden">Название пиццы</span>
+            <input
+              v-model="pizza.name"
+              type="text"
+              name="pizza_name"
+              placeholder="Введите название пиццы"
+            />
+          </label>
+
+          <pizza-component
+            :dough="pizza.dough"
+            :sauce="pizza.sauce"
+            :ingredients="pizza.ingredients"
+            @drop="addIngredient"
+          />
+
+          <div class="content__result">
+            <p>Итого: {{ price }} ₽</p>
+            <button type="button" class="button" :disabled="disableSubmit">
+              Готовьте!
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   </main>
@@ -152,5 +231,173 @@ const sizeItems = sizes.map(normalizeSize);
   &--small {
     @include b-s18-h21;
   }
+}
+
+.button {
+  $bl: &;
+
+  @include b-s18-h21;
+  font-family: inherit;
+  display: block;
+
+  box-sizing: border-box;
+  margin: 0 0 0 12px;
+  padding: 16px 45px;
+
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+
+  color: $white;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  box-shadow: $shadow-medium;
+
+  background-color: $green-500;
+
+  &:hover:not(:active):not(:disabled) {
+    background-color: $green-400;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $green-600;
+  }
+
+  &:focus:not(:disabled) {
+    opacity: 0.5;
+  }
+
+  &:disabled {
+    background-color: $green-300;
+    color: rgba($white, 0.2);
+    cursor: default;
+  }
+
+  &--border {
+    background-color: transparent;
+    border: 1px solid $green-500;
+    color: $black;
+    box-shadow: none;
+
+    &:hover:not(:active):not(:disabled) {
+      color: $green-500;
+      border-color: $green-500;
+      background-color: transparent;
+    }
+
+    &:active:not(:disabled) {
+      color: $green-600;
+      border-color: $green-600;
+      background-color: transparent;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+
+  &--transparent {
+    @include b-s14-h16;
+    background-color: transparent;
+    box-shadow: none;
+    color: $black;
+
+    &:hover:not(:active):not(:disabled) {
+      color: $red-800;
+      background-color: transparent;
+    }
+
+    &:active:not(:disabled) {
+      color: $red-900;
+      background-color: transparent;
+    }
+
+    &:disabled {
+      opacity: 0.25;
+    }
+  }
+
+  &--arrow {
+    &::before {
+      content: "";
+      background-image: url("@/assets/img/button-arrow.svg");
+      background-position: center;
+      background-repeat: no-repeat;
+      margin-right: 16px;
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      vertical-align: middle;
+      transform: translateY(-1px);
+    }
+  }
+
+  &--white {
+    background-color: $white;
+    color: $green-500;
+  }
+}
+
+.input {
+  display: block;
+
+  span {
+    @include r-s14-h16;
+
+    display: block;
+
+    margin-bottom: 4px;
+  }
+
+  input {
+    @include r-s16-h19;
+
+    display: block;
+
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 8px 16px;
+
+    transition: 0.3s;
+
+    color: $black;
+    border: 1px solid $purple-400;
+    border-radius: 8px;
+    outline: none;
+    background-color: $white;
+
+    font-family: inherit;
+
+    &:focus {
+      border-color: $green-500;
+    }
+  }
+
+  &:hover {
+    input {
+      border-color: $black;
+    }
+  }
+
+  &--big-label {
+    display: flex;
+    align-items: center;
+
+    span {
+      @include b-s16-h19;
+
+      margin-right: 16px;
+
+      white-space: nowrap;
+    }
+  }
+}
+
+p {
+  @include b-s24-h28;
+
+  margin: 0;
 }
 </style>

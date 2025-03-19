@@ -1,10 +1,20 @@
 <script setup>
-defineEmits(["action"]);
+defineEmits(["decrement", "increment", "update:counterValue"]);
 defineProps({
   counterValue: {
     type: Number,
     required: true,
     default: 0,
+  },
+  incrementDisable: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  decrementDisable: {
+    type: Boolean,
+    default: false,
+    required: true,
   },
 });
 </script>
@@ -14,8 +24,8 @@ defineProps({
     <button
       type="button"
       class="counter__button counter__button--minus"
-      disabled
-      @click="$emit('action')"
+      :disabled="decrementDisable"
+      @click="$emit('decrement')"
     >
       <span class="visually-hidden">Меньше</span>
     </button>
@@ -24,11 +34,13 @@ defineProps({
       name="counter"
       class="counter__input"
       :value="counterValue"
+      @change="$emit('update:counterValue', $event.target.value)"
     />
     <button
       type="button"
       class="counter__button counter__button--plus"
-      @click="$emit('action')"
+      :disabled="incrementDisable"
+      @click="$emit('increment')"
     >
       <span class="visually-hidden">Больше</span>
     </button>
