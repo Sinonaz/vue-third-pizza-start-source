@@ -5,3 +5,10 @@
 @import "visually-hidden.scss";
 @import "scaffolding.scss";
 @import "mixins/mixins";
+
+// common
+@import "common/button";
+@import "common/content";
+@import "common/input";
+@import "common/sheet";
+@import "common/title";

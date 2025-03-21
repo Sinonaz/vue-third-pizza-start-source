@@ -4,6 +4,7 @@ import CounterComponent from "@/common/components/CounterComponent.vue";
 import { toRef } from "vue";
 import { MAX_INGREDIENT_COUNT } from "@/common/constants";
 import AppDrag from "@/common/components/AppDrag.vue";
+import AppCounter from "@/common/components/app-counter/AppCounter.vue";
 
 const props = defineProps({
   ingredientItems: {
@@ -61,15 +62,16 @@ const changeValue = (ingredient, count) => {
           </span>
         </app-drag>
 
-        <counter-component
-          :counter-value="getValue(ingredient.value)"
-          :decrement-disable="getValue(ingredient.value) === 0"
-          :increment-disable="
+        <app-counter
+          class="ingredients__counter"
+          :value="getValue(ingredient.value)"
+          :decrement-disabled="getValue(ingredient.value) === 0"
+          :increment-disabled="
             getValue(ingredient.value) === MAX_INGREDIENT_COUNT
           "
           @decrement="decrementValue(ingredient.value)"
           @increment="incrementValue(ingredient.value)"
-          @update:counter-value="
+          @update:value="
             (value) => {
               changeValue(ingredient.value, value);
             }
