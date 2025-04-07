@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+import AppCounter from "@/common/components/app-counter/AppCounter.vue";
+import { ref } from "vue";
+import { getImage } from "@/common/helpers";
+
+const value = ref(0);
+</script>
 
 <template>
   <main class="content cart">
@@ -15,7 +21,7 @@
         <li class="cart-list__item">
           <div class="product cart-list__product">
             <img
-              src="/img/product.svg"
+              :src="getImage('product.svg')"
               class="product__img"
               width="56"
               height="56"
@@ -31,26 +37,12 @@
             </div>
           </div>
 
-          <div class="counter cart-list__counter">
-            <button
-              type="button"
-              class="counter__button counter__button--minus"
-            >
-              <span class="visually-hidden">Меньше</span>
-            </button>
-            <input
-              type="text"
-              name="counter"
-              class="counter__input"
-              value="1"
-            />
-            <button
-              type="button"
-              class="counter__button counter__button--plus counter__button--orange"
-            >
-              <span class="visually-hidden">Больше</span>
-            </button>
-          </div>
+          <AppCounter
+            :value="value"
+            :decrement-disabled="value === 0"
+            is-orange
+            @update:value="value = $event"
+          />
 
           <div class="cart-list__price">
             <b>782 ₽</b>
@@ -63,7 +55,7 @@
         <li class="cart-list__item">
           <div class="product cart-list__product">
             <img
-              src="/img/product.svg"
+              :src="getImage('product.svg')"
               class="product__img"
               width="56"
               height="56"
@@ -81,26 +73,12 @@
             </div>
           </div>
 
-          <div class="counter cart-list__counter">
-            <button
-              type="button"
-              class="counter__button counter__button--minus"
-            >
-              <span class="visually-hidden">Меньше</span>
-            </button>
-            <input
-              type="text"
-              name="counter"
-              class="counter__input"
-              value="2"
-            />
-            <button
-              type="button"
-              class="counter__button counter__button--plus counter__button--orange"
-            >
-              <span class="visually-hidden">Больше</span>
-            </button>
-          </div>
+          <AppCounter
+            :value="value"
+            :decrement-disabled="value === 0"
+            is-orange
+            @update:value="value = $event"
+          />
 
           <div class="cart-list__price">
             <b>782 ₽</b>
@@ -117,7 +95,7 @@
           <li class="additional-list__item sheet">
             <p class="additional-list__description">
               <img
-                src="/img/cola.svg"
+                :src="getImage('cola.svg')"
                 width="39"
                 height="60"
                 alt="Coca-Cola 0,5 литра"
@@ -126,26 +104,13 @@
             </p>
 
             <div class="additional-list__wrapper">
-              <div class="counter additional-list__counter">
-                <button
-                  type="button"
-                  class="counter__button counter__button--minus"
-                >
-                  <span class="visually-hidden">Меньше</span>
-                </button>
-                <input
-                  type="text"
-                  name="counter"
-                  class="counter__input"
-                  value="2"
-                />
-                <button
-                  type="button"
-                  class="counter__button counter__button--plus counter__button--orange"
-                >
-                  <span class="visually-hidden">Больше</span>
-                </button>
-              </div>
+              <AppCounter
+                class="additional-list__counter"
+                :value="value"
+                :decrement-disabled="value === 0"
+                is-orange
+                @update:value="value = $event"
+              />
 
               <div class="additional-list__price">
                 <b>× 56 ₽</b>
@@ -155,7 +120,7 @@
           <li class="additional-list__item sheet">
             <p class="additional-list__description">
               <img
-                src="/img/sauce.svg"
+                :src="getImage('sauce.svg')"
                 width="39"
                 height="60"
                 alt="Острый соус"
@@ -164,26 +129,13 @@
             </p>
 
             <div class="additional-list__wrapper">
-              <div class="counter additional-list__counter">
-                <button
-                  type="button"
-                  class="counter__button counter__button--minus"
-                >
-                  <span class="visually-hidden">Меньше</span>
-                </button>
-                <input
-                  type="text"
-                  name="counter"
-                  class="counter__input"
-                  value="2"
-                />
-                <button
-                  type="button"
-                  class="counter__button counter__button--plus counter__button--orange"
-                >
-                  <span class="visually-hidden">Больше</span>
-                </button>
-              </div>
+              <AppCounter
+                class="additional-list__counter"
+                :value="value"
+                :decrement-disabled="value === 0"
+                is-orange
+                @update:value="value = $event"
+              />
 
               <div class="additional-list__price">
                 <b>× 30 ₽</b>
@@ -193,7 +145,7 @@
           <li class="additional-list__item sheet">
             <p class="additional-list__description">
               <img
-                src="/img/potato.svg"
+                :src="getImage('potato.svg')"
                 width="39"
                 height="60"
                 alt="Картошка из печи"
@@ -202,26 +154,13 @@
             </p>
 
             <div class="additional-list__wrapper">
-              <div class="counter additional-list__counter">
-                <button
-                  type="button"
-                  class="counter__button counter__button--minus"
-                >
-                  <span class="visually-hidden">Меньше</span>
-                </button>
-                <input
-                  type="text"
-                  name="counter"
-                  class="counter__input"
-                  value="2"
-                />
-                <button
-                  type="button"
-                  class="counter__button counter__button--plus counter__button--orange"
-                >
-                  <span class="visually-hidden">Больше</span>
-                </button>
-              </div>
+              <AppCounter
+                class="additional-list__counter"
+                :value="value"
+                :decrement-disabled="value === 0"
+                is-orange
+                @update:value="value = $event"
+              />
 
               <div class="additional-list__price">
                 <b>× 56 ₽</b>
@@ -446,7 +385,7 @@
   border-radius: 8px;
   outline: none;
   background-color: $silver-100;
-  background-image: url("..//img/select.svg");
+  background-image: url("@/assets/img/select.svg");
   background-repeat: no-repeat;
   background-position: right 8px center;
 

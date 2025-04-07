@@ -4,7 +4,7 @@ import AppHeader from "@/layouts/AppHeader.vue";
 
 <template>
   <div>
-    <app-header />
+    <AppHeader />
     <slot />
   </div>
 </template>

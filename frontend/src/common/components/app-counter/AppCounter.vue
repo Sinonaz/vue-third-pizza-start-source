@@ -3,17 +3,19 @@ defineProps({
   incrementDisabled: {
     type: Boolean,
     default: false,
-    required: true,
   },
   decrementDisabled: {
     type: Boolean,
     default: false,
-    required: true,
   },
   value: {
     type: Number,
     default: 0,
     required: true,
+  },
+  isOrange: {
+    type: Boolean,
+    default: false,
   },
 });
 defineEmits(["decrement", "increment", "update:value"]);
@@ -24,6 +26,7 @@ defineEmits(["decrement", "increment", "update:value"]);
     <button
       type="button"
       class="counter__button counter__button--minus"
+      :class="{ 'counter__button--orange': isOrange && !decrementDisabled }"
       :disabled="decrementDisabled"
       @click="$emit('decrement')"
     >
@@ -41,6 +44,7 @@ defineEmits(["decrement", "increment", "update:value"]);
     <button
       type="button"
       class="counter__button counter__button--plus"
+      :class="{ 'counter__button--orange': isOrange }"
       :disabled="incrementDisabled"
       @click="$emit('increment')"
     >

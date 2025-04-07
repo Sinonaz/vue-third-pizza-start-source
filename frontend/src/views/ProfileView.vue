@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+import { useRoute } from "vue-router";
+import { computed } from "vue";
+
+const route = useRoute();
+const routeName = computed(() => route.name);
+</script>
 
 <template>
   <main class="layout">
@@ -12,10 +18,16 @@
         />
       </router-link>
 
-      <router-link :to="{ name: 'orders' }" class="layout__link"
+      <router-link
+        :to="{ name: 'orders' }"
+        class="layout__link"
+        :class="{ 'layout__link--active': routeName === 'orders' }"
         >История заказов</router-link
       >
-      <router-link :to="{ name: 'userData' }" class="layout__link"
+      <router-link
+        :to="{ name: 'userData' }"
+        class="layout__link"
+        :class="{ 'layout__link--active': routeName === 'userData' }"
         >Мои данные</router-link
       >
     </div>
