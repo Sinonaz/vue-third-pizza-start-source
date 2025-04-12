@@ -1,6 +1,5 @@
 <script setup>
-import { getImage } from "@/common/helpers";
-import CounterComponent from "@/common/components/CounterComponent.vue";
+import { getPublicImage } from "@/common/helpers";
 import { toRef } from "vue";
 import { MAX_INGREDIENT_COUNT } from "@/common/constants";
 import AppDrag from "@/common/components/AppDrag.vue";
@@ -45,7 +44,10 @@ const changeValue = (ingredient, count) => {
           :draggable="values[ingredient.id] < MAX_INGREDIENT_COUNT"
         >
           <span :class="`filling filling--${ingredient.value}`">
-            <img :src="getImage(ingredient.image)" :alt="ingredient.name" />
+            <img
+              :src="getPublicImage(ingredient.image)"
+              :alt="ingredient.name"
+            />
             {{ ingredient.name }}
           </span>
         </app-drag>

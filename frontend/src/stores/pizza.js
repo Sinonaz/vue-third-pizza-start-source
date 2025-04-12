@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ingredientsQuantity } from "@/common/helpers/ingredients-quantity";
 import { pizzaPrice } from "@/common/helpers/pizza-price";
-import { useUserDataStore } from "@/stores/userData";
+import { useDataStore } from "@/stores/userData";
 
 export const usePizzaStore = defineStore("pizza", {
   state: () => ({
@@ -14,19 +14,19 @@ export const usePizzaStore = defineStore("pizza", {
   }),
   getters: {
     sauce: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
       return data.sauces.find((i) => i.id === state.sauceId) ?? data.sauces[0];
     },
     dough: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
       return data.doughs.find((i) => i.id === state.doughId) ?? data.doughs[0];
     },
     size: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
       return data.sizes.find((i) => i.id === state.sizeId) ?? data.sizes[0];
     },
     ingredientsExtended: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
       const pizzaIngredientsIds = state.ingredients.map((i) => i.ingredientId);
       return data.ingredients
         .filter((i) => pizzaIngredientsIds.includes(i.id))

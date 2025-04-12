@@ -1,8 +1,8 @@
-import { useUserDataStore } from "@/stores/userData";
+import { useDataStore } from "@/stores/userData";
 import { ingredientsQuantity } from "@/common/helpers/ingredients-quantity";
 
 export const pizzaPrice = (pizza) => {
-  const data = useUserDataStore();
+  const data = useDataStore();
   const ingredients = ingredientsQuantity(pizza);
 
   const sizeMultiplier =

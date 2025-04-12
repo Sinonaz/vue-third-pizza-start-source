@@ -1,8 +1,8 @@
-import { useUserDataStore } from "@/stores/userData";
+import { useDataStore } from "@/stores/userData";
 
 /* Функция вернёт объект { ингредиент: количество } */
 export const ingredientsQuantity = (pizza) => {
-  const data = useUserDataStore();
+  const data = useDataStore();
   return data.ingredients.reduce((acc, val) => {
     acc[val.id] =
       pizza.ingredients.find((item) => item.ingredientId === val.id)

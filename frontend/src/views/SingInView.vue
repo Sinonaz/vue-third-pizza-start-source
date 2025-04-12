@@ -1,10 +1,64 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+import { clearValidationErrors, validateFields } from "@/common/validator";
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const resetValidations = () => {
+  return {
+    email: {
+      error: "",
+      rules: ["required", "email"],
+    },
+    password: {
+      error: "",
+      rules: ["required"],
+    },
+  };
+};
 
 const email = ref("");
 const password = ref("");
+const validations = ref(resetValidations());
+const errorMessage = ref(null);
 
-const onClick = () => {};
+const watchField = (field) => () => {
+  if (errorMessage.value) {
+    errorMessage.value = null;
+  }
+  if (validations.value[field]?.error) {
+    clearValidationErrors(validations.value);
+  }
+};
+
+watch(email, watchField("email"));
+watch(password, watchField("password"));
+
+const login = async () => {
+  const isValid = validateFields(
+    { email: email.value, password: password.value },
+    validations.value,
+  );
+
+  if (!isValid) {
+    return;
+  }
+
+  const resMsg = await authStore.login({
+    email: email.value,
+    password: password.value,
+  });
+
+  if (resMsg === "success") {
+    await authStore.whoami();
+    await router.push({ name: "home" });
+  } else {
+    errorMessage.value = resMsg;
+  }
+};
 </script>
 
 <template>
@@ -15,7 +69,7 @@ const onClick = () => {};
     <div class="sign-form__title">
       <h1 class="title title--small">Авторизуйтесь на сайте</h1>
     </div>
-    <form action="test.html" method="post">
+    <form action="test.html" method="post" @submit.prevent="login">
       <div class="sign-form__input">
         <label class="input">
           <span>E-mail</span>
@@ -26,6 +80,9 @@ const onClick = () => {};
             placeholder="example@mail.ru"
           />
         </label>
+        <div class="sign-form__input-error">
+          {{ validations.email.error }}
+        </div>
       </div>
 
       <div class="sign-form__input">
@@ -38,10 +95,14 @@ const onClick = () => {};
             placeholder="***********"
           />
         </label>
+        <div class="sign-form__input-error">
+          {{ validations.password.error }}
+        </div>
       </div>
-      <button type="submit" class="button" @click="onClick">
-        Авторизоваться
-      </button>
+      <button type="submit" class="button">Авторизоваться</button>
+      <div class="server-error">
+        {{ errorMessage }}
+      </div>
     </form>
   </div>
 </template>
@@ -140,5 +201,17 @@ const onClick = () => {};
       background-color: $white;
     }
   }
+}
+
+.sign-form__input-error,
+.server-error {
+  height: 16px;
+  color: $red-800;
+}
+.sign-form__input-error {
+  margin-top: 4px;
+}
+.server-error {
+  margin-top: 20px;
 }
 </style>

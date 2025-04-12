@@ -1,5 +1,5 @@
 <script setup>
-import { getImage } from "@/common/helpers";
+import { getPublicImage } from "@/common/helpers";
 
 defineProps({
   doughItems: {
@@ -34,7 +34,7 @@ defineEmits(["update:modelValue"]);
             :checked="dough.id === modelValue"
             @change="$emit('update:modelValue', dough.id)"
           />
-          <img :src="getImage(dough.image)" :alt="dough.name" />
+          <img :src="getPublicImage(dough.image)" :alt="dough.name" />
           <b>{{ dough.name }}</b>
           <span>{{ dough.description }}</span>
         </label>

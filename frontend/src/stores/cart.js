@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { pizzaPrice } from "@/common/helpers/pizza-price";
-import { useUserDataStore } from "@/stores/userData";
+import { useDataStore } from "@/stores/userData";
+import { useAuthStore } from "@/stores/auth";
+import resources from "@/services/resources";
 
 export const useCartStore = defineStore("cart", {
   state: () => ({
@@ -16,7 +18,7 @@ export const useCartStore = defineStore("cart", {
   }),
   getters: {
     pizzasExtended: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
 
       return state.pizzas.map((pizza) => {
         const pizzaIngredientsIds = pizza.ingredients.map(
@@ -37,7 +39,7 @@ export const useCartStore = defineStore("cart", {
       });
     },
     miscExtended: (state) => {
-      const data = useUserDataStore();
+      const data = useDataStore();
 
       return data.misc.map((misc) => {
         return {
@@ -122,6 +124,17 @@ export const useCartStore = defineStore("cart", {
     },
     setComment(comment) {
       this.address.street = comment;
+    },
+    async publishOrder() {
+      const authStore = useAuthStore();
+
+      return await resources.order.createOrder({
+        userId: authStore.user?.id ?? null,
+        phone: this.phone,
+        address: this.address,
+        pizzas: this.pizzas,
+        misc: this.misc,
+      });
     },
   },
 });
