@@ -8,8 +8,8 @@ defineProps({
     default: () => [],
   },
   modelValue: {
-    type: String,
-    default: "light",
+    type: Number,
+    required: true,
   },
 });
 defineEmits(["update:modelValue"]);
@@ -30,9 +30,9 @@ defineEmits(["update:modelValue"]);
             type="radio"
             name="dough"
             class="visually-hidden"
-            :value="dough.value"
-            :checked="dough.value === modelValue"
-            @change="$emit('update:modelValue', dough.value)"
+            :value="dough.id"
+            :checked="dough.id === modelValue"
+            @change="$emit('update:modelValue', dough.id)"
           />
           <img :src="getImage(dough.image)" :alt="dough.name" />
           <b>{{ dough.name }}</b>

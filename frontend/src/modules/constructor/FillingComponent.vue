@@ -21,20 +21,8 @@ const props = defineProps({
 const emit = defineEmits(["update"]);
 const values = toRef(props, "values");
 
-const getValue = (ingredient) => {
-  return values.value[ingredient] ?? 0;
-};
-
 const setValue = (ingredient, count) => {
   emit("update", ingredient, Number(count));
-};
-
-const decrementValue = (ingredient) => {
-  setValue(ingredient, getValue(ingredient) - 1);
-};
-
-const incrementValue = (ingredient) => {
-  setValue(ingredient, getValue(ingredient) + 1);
 };
 
 const changeValue = (ingredient, count) => {
@@ -54,7 +42,7 @@ const changeValue = (ingredient, count) => {
       >
         <app-drag
           :data-transfer="ingredient"
-          :draggable="getValue(ingredient.value) < MAX_INGREDIENT_COUNT"
+          :draggable="values[ingredient.id] < MAX_INGREDIENT_COUNT"
         >
           <span :class="`filling filling--${ingredient.value}`">
             <img :src="getImage(ingredient.image)" :alt="ingredient.name" />
@@ -64,18 +52,10 @@ const changeValue = (ingredient, count) => {
 
         <app-counter
           class="ingredients__counter"
-          :value="getValue(ingredient.value)"
-          :decrement-disabled="getValue(ingredient.value) === 0"
-          :increment-disabled="
-            getValue(ingredient.value) === MAX_INGREDIENT_COUNT
-          "
-          @decrement="decrementValue(ingredient.value)"
-          @increment="incrementValue(ingredient.value)"
-          @update:value="
-            (value) => {
-              changeValue(ingredient.value, value);
-            }
-          "
+          :value="values[ingredient.id]"
+          :decrement-disabled="values[ingredient.id] === 0"
+          :increment-disabled="values[ingredient.id] === MAX_INGREDIENT_COUNT"
+          @update:value="changeValue(ingredient.id, $event)"
         />
       </li>
     </ul>

@@ -34,4 +34,10 @@ export default [
     name: "signIn",
     component: () => import("@/views/SingInView.vue"),
   },
+  {
+    path: "/success",
+    name: "success",
+    component: () => import("@/views/SuccessView.vue"),
+    meta: { layout: "AppLayoutMain" },
+  },
 ];

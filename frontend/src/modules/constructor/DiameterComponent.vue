@@ -6,8 +6,8 @@ defineProps({
     default: () => [],
   },
   modelValue: {
-    type: String,
-    default: "small",
+    type: Number,
+    required: true,
   },
 });
 defineEmits(["update:modelValue"]);
@@ -27,10 +27,10 @@ defineEmits(["update:modelValue"]);
           <input
             type="radio"
             name="diameter"
-            :value="size.value"
+            :value="size.id"
             class="visually-hidden"
-            :checked="size.value === modelValue"
-            @change="$emit('update:modelValue', size.value)"
+            :checked="size.id === modelValue"
+            @change="$emit('update:modelValue', size.id)"
           />
           <span>{{ size.name }}</span>
         </label>

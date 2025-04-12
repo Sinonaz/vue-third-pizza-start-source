@@ -14,12 +14,16 @@ import DiameterComponent from "@/modules/constructor/DiameterComponent.vue";
 import SauceComponent from "@/modules/constructor/SauceComponent.vue";
 import FillingComponent from "@/modules/constructor/FillingComponent.vue";
 import PizzaComponent from "@/modules/constructor/PizzaComponent.vue";
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
+import { useCartStore, usePizzaStore, useUserDataStore } from "@/stores";
+import { useRouter } from "vue-router";
 
 const doughItems = doughs.map(normalizeDough);
 const ingredientItems = ingredients.map(normalizeIngredients);
 const sauceItems = sauces.map(normalizeSauces);
 const sizeItems = sizes.map(normalizeSize);
+
+const router = useRouter();
 
 const pizza = reactive({
   name: "",
@@ -30,6 +34,46 @@ const pizza = reactive({
     acc[item.value] = 0;
     return acc;
   }, {}),
+});
+
+const dataStore = useUserDataStore();
+const pizzaStore = usePizzaStore();
+const cartStore = useCartStore();
+
+const name = computed({
+  get() {
+    return pizzaStore.name;
+  },
+  set(value) {
+    pizzaStore.setName(value);
+  },
+});
+
+const doughId = computed({
+  get() {
+    return pizzaStore.doughId;
+  },
+  set(value) {
+    pizzaStore.setDough(value);
+  },
+});
+
+const sizeId = computed({
+  get() {
+    return pizzaStore.sizeId;
+  },
+  set(value) {
+    pizzaStore.setSize(value);
+  },
+});
+
+const sauceId = computed({
+  get() {
+    return pizzaStore.sauceId;
+  },
+  set(value) {
+    pizzaStore.setSauce(value);
+  },
 });
 
 const price = computed(() => {
@@ -57,16 +101,29 @@ const price = computed(() => {
 });
 
 const disableSubmit = computed(() => {
-  return pizza.name.length === 0 || price.value === 0;
+  return name.value.length === 0 || pizzaStore.price === 0;
 });
 
-const addIngredient = (ingredient) => {
-  pizza.ingredients[ingredient]++;
+const addToCart = async () => {
+  cartStore.savePizza(pizzaStore.$state);
+  await router.push({ name: "cart" });
+  resetPizza();
 };
 
-const updateIngredientAmount = (ingredient, count) => {
-  pizza.ingredients[ingredient] = count;
+const resetPizza = () => {
+  pizzaStore.setName("");
+  pizzaStore.setDough(dataStore.doughs[0].id);
+  pizzaStore.setSize(dataStore.sizes[0].id);
+  pizzaStore.setSauce(dataStore.sauces[0].id);
+  pizzaStore.setIngredients([]);
+  pizzaStore.setIndex(null);
 };
+
+onMounted(() => {
+  if (pizzaStore.index === null) {
+    resetPizza();
+  }
+});
 </script>
 
 <template>
@@ -75,9 +132,9 @@ const updateIngredientAmount = (ingredient, count) => {
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
 
-        <dough-component v-model="pizza.dough" :dough-items="doughItems" />
+        <dough-component v-model="doughId" :dough-items="dataStore.doughs" />
 
-        <diameter-component v-model="pizza.size" :size-items="sizeItems" />
+        <diameter-component v-model="sizeId" :size-items="dataStore.sizes" />
 
         <div class="content__ingredients">
           <div class="sheet">
@@ -87,14 +144,14 @@ const updateIngredientAmount = (ingredient, count) => {
 
             <div class="sheet__content ingredients">
               <sauce-component
-                v-model="pizza.sauce"
-                :sauce-items="sauceItems"
+                v-model="sauceId"
+                :sauce-items="dataStore.sauces"
               />
 
               <filling-component
-                :ingredient-items="ingredientItems"
-                :values="pizza.ingredients"
-                @update="updateIngredientAmount"
+                :ingredient-items="dataStore.ingredients"
+                :values="pizzaStore.ingredientQuantities"
+                @update="pizzaStore.setIngredientQuantity"
               />
             </div>
           </div>
@@ -112,15 +169,20 @@ const updateIngredientAmount = (ingredient, count) => {
           </label>
 
           <pizza-component
-            :dough="pizza.dough"
-            :sauce="pizza.sauce"
-            :ingredients="pizza.ingredients"
-            @drop="addIngredient"
+            :dough="pizzaStore.dough.value"
+            :sauce="pizzaStore.sauce.value"
+            :ingredients="pizzaStore.ingredientsExtended"
+            @drop="pizzaStore.incrementIngredientQuantity"
           />
 
           <div class="content__result">
             <p>Итого: {{ price }} ₽</p>
-            <button type="button" class="button" :disabled="disableSubmit">
+            <button
+              type="button"
+              class="button"
+              :disabled="disableSubmit"
+              @click="addToCart"
+            >
               Готовьте!
             </button>
           </div>
